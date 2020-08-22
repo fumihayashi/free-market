@@ -21,7 +21,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # POST /resource
   def create
-    if session["devise.sns_auth"]  ## 変更
+    if session["devise.sns_auth"]
       ## SNS認証でユーザー登録をしようとしている場合
       ## パスワードが未入力なのでランダムで生成する
       password = Devise.friendly_token[8,12] + "1a"
@@ -31,9 +31,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
     
     build_resource(sign_up_params)  ## @user = User.new(user_params) をしているイメージ
-    ## ↓resource（@user）にsns_credentialを紐付けている
-    resource.build_sns_credential(session["devise.sns_auth"]["sns_credential"]) if session["devise.sns_auth"]
-
+    session["devise.user_object"] = @user  ## sessionに@userを入れる
+    respond_with resource, location: after_sign_up_path_for(resource)  ## リダイレクト
     if resource.save  ## @user.save をしているイメージ
       set_flash_message! :notice, :signed_up  ## フラッシュメッセージのセット
       sign_up(resource_name, resource)  ## 新規登録＆ログイン
