@@ -19,11 +19,6 @@ class User < ApplicationRecord
               provider = auth_data.provider
 
               sns_credential = SnsCredential.where(uid: uid, provider: provider).first_or_initialize
-
-              unless sns_credential.persisted?
-                     ## sns_credentialがwhereでヒットしなかった＝A（ユーザー登録したことがない）かD（メールで登録した）
-                     sns_credential.save
-              end
               
               ## sns_credentialに紐付いたuserがいるかどうか
               if sns_credential.user.present?
@@ -36,7 +31,11 @@ class User < ApplicationRecord
                      user = User.where(email: email).first_or_initialize
               end
              
-              unless user.persisted?
+              if user.persisted?
+                     ## ここにきた=D（メールで登録した）
+                     sns_credential.user_id = user.id
+                     sns_credential.save
+              else
                      ## ここにきた＝userもsns_credentialもヒットしなかった=A（ユーザー登録したことがない）
                      user.nickname = nickname
               end
