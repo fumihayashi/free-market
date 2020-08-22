@@ -4,7 +4,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # before_action :configure_sign_up_params, only: [:create]
   # before_action :configure_account_update_params, only: [:update]
   prepend_before_action :check_recaptcha, only: [:create]
-  before_action :authenticate_scope!, only: [:confirm_phone, :new_address, :create_address]  ## 追加
+  before_action :session_has_not_user, only: [:confirm_phone, :new_address, :create_address]  ## 追加
   layout 'no_menu'
 
   # GET /resource/sign_up
@@ -39,16 +39,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
       flash.now[:alert] = resource.errors.full_messages
       render :new and return
     end
+    session["devise.user_object"] = @user.attributes  ## sessionに@userを入れる
+    session["devise.user_object"][:password] = params[:user][:password]  ## 暗号化前のパスワードをsessionに入れる
 
-    session["devise.user_object"] = @user  ## sessionに@userを入れる
     respond_with resource, location: after_sign_up_path_for(resource)  ## リダイレクト
-    if resource.save  ## @user.save をしているイメージ
-      set_flash_message! :notice, :signed_up  ## フラッシュメッセージのセット
-      sign_up(resource_name, resource)  ## 新規登録＆ログイン
-      respond_with resource, location: after_sign_up_path_for(resource)  ## リダイレクト
-    else
-      redirect_to new_user_registration_path, alert: @user.errors.full_messages
-    end
+
   end
 
   # GET /resource/edit
@@ -95,6 +90,18 @@ class Users::RegistrationsController < Devise::RegistrationsController
     if @address.invalid? ## バリデーションに引っかかる（save不可な）時
       redirect_to users_new_address_path, alert: @address.errors.full_messages
     end
+
+    ## user,sns_credential,addressの登録とログインをする
+    @progress = 5
+    ## ↓@user = User.newをしているイメージ
+    @user = build_resource(session["devise.user_object"])
+    @user.build_sns_credential(session["devise.sns_auth"]["sns_credential"]) if session["devise.sns_auth"] ## sessionがあるとき＝sns認証でここまできたとき
+    @user.address = @address
+    if @user.save
+      sign_up(resource_name, resource)  ## ログインさせる
+    else
+      redirect_to root_path, alert: @user.errors.full_messages
+    end
   end
 
   protected
@@ -137,5 +144,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
       :house_number,
       :building_name,
       )
+  end
+
+  def session_has_not_user
+    redirect_to new_user_registration_path, alert: "会員情報を入力してください。" unless session["devise.user_object"].present?
   end
 end
