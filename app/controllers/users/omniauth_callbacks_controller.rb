@@ -4,7 +4,19 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def callback_for(provider)
-    redirect_to root_path, notice: "認証成功です"
+    user_sns = User.from_omniauth(request.env["omniauth.auth"])
+    @user = user_sns[:user]
+    sns_credential = user_sns[:sns_credential]
+   
+   if @user.persisted?
+      ## @userが登録済み
+      sns_credential.update(user_id: @user.id)
+      sign_in_and_redirect @user, event: :authentication
+    else
+      ## @userが未登録
+      @sns_auth = true
+      render layout: 'no_menu', template: 'devise/registrations/new'
+    end
   end
 
   def failure
