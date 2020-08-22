@@ -106,7 +106,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # end
 
   def after_sign_up_path_for(resource)
-    user_path(resource)
+    users_confirm_phone_path
   end
 
   private
