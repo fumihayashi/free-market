@@ -1,5 +1,5 @@
 class Address < ApplicationRecord
-  class Address < ApplicationRecord
     belongs_to :user, optional: true
-  end
+
+    validates :city, :house_number, :postal_code, presence: true
 end
