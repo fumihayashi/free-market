@@ -4,6 +4,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # before_action :configure_sign_up_params, only: [:create]
   # before_action :configure_account_update_params, only: [:update]
   prepend_before_action :check_recaptcha, only: [:create]
+  before_action :authenticate_scope!, only: [:confirm_phone, :new_address, :create_address]  ## 追加
   layout 'no_menu'
 
   # GET /resource/sign_up
@@ -67,7 +68,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # end
 
   def select
-    session.delete("devise.sns_auth")## 追加
+    session.delete("devise.sns_auth")
     @auth_text = "で登録する"
   end
 
@@ -83,7 +84,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def create_address
     @progress = 5
     @address = Address.new(address_params)
-    unless @address.save!
+    unless @address.save
       redirect_to users_new_address_path, alert: @address.errors.full_messages
     end
   end
