@@ -13,7 +13,7 @@ document.addEventListener('turbolinks:load', function () {
   /////////画像の投稿ボタン（グレーのブロック）をクリックした時。/////////
   ///////////////////////////////////////////////////////////////
   $("#select-image-button").on("click", function () {
-    const file_field = $("#item_images_attributes_0_src"); // 新規画像投稿用のfile_fieldを取得する。
+    const file_field = $(".new-item-image:last"); // 新規画像投稿用のfile_fieldのを取得する。
     file_field.trigger("click"); // file_fieldをクリックさせる。
   });
   /////////画像の投稿ボタン（グレーのブロック）をクリックした時ここまで/////////
