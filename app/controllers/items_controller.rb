@@ -4,10 +4,9 @@ class ItemsController < ApplicationController
   before_action :user_is_not_seller, only: [:edit, :update, :destroy]
 
   def new
-    @item = Item.new  ## 追加
-    3.times do
-      @item.images.build
-    end
+    @item = Item.new
+    @item.images.build
+
     render layout: 'no_menu' # レイアウトファイルを指定
   end
 
