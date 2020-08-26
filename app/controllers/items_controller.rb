@@ -16,11 +16,30 @@ class ItemsController < ApplicationController
   end
 
   def edit
+    @item = Item.find(params[:id])
     render layout: 'no_menu' # レイアウトファイル指定
   end
 
   def purchase_confirmation
     render layout: 'no_menu' # レイアウトファイル指定
+  end
+
+  def update
+    @item = Item.find(params[:id])
+    if @item.update(item_params)
+      redirect_to root_path, notice: "商品の編集が完了しました。"
+    else
+      render layout: 'no_menu', action: :edit
+    end
+  end
+
+  def destroy
+    @item = Item.find(params[:id])
+    if @item.destroy
+      redirect_to root_path, notice: "商品の削除が完了しました。"
+    else
+      redirect_to edit_item_path(@item), alert: "商品が削除できませんでした。"
+    end
   end
 
   private
