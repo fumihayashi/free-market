@@ -8,6 +8,7 @@ class Item < ApplicationRecord
   belongs_to_active_hash :prefecture
 
   has_many :images, dependent: :destroy
+  accepts_nested_attributes_for :images
 
   enum condition:{
     "新品、未使用": 0,
