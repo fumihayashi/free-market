@@ -29,7 +29,8 @@
         = image.object.src
         %br
         = image.file_field :src, accept: "image/*"
-        = image.check_box :_destroy, include_hidden: false, style: "display: block;"
+        - if image.object.persisted?
+          = image.check_box :_destroy, include_hidden: false, style: "display: block;"
   .block.horizontal-padding-5
     .input-field
       .input-field-main
