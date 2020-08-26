@@ -7,6 +7,8 @@ class Item < ApplicationRecord
   extend ActiveHash::Associations::ActiveRecordExtensions
   belongs_to_active_hash :prefecture
 
+  has_many :images, dependent: :destroy
+
   enum condition:{
     "新品、未使用": 0,
     "未使用に近い": 1,
