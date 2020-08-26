@@ -1,6 +1,7 @@
 class ItemsController < ApplicationController
 
   def new
+    @item = Item.new  ## 追加
     render layout: 'no_menu' # レイアウトファイルを指定
   end
 
