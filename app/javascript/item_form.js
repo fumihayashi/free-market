@@ -51,4 +51,16 @@ document.addEventListener('turbolinks:load', function () {
   });
   /////////file_fieldが変化した時ここまで/////////
 
+  /////////////////////////////////////////////
+  /////////画像の削除ボタンをクリックした時/////////
+  ////////////////////////////////////////////
+  $("#selected-item-images").on("click", ".item-image__buttons--delete", function (e) {
+    const index = $(this).parents(".item-image").data("index");
+    console.log(index, "番目の画像を削除します")
+    $(this).parents(".item-image").remove();
+    $(`#item_images_attributes_${index}__destroy`).prop("checked", true);
+    $(`#item_images_attributes_${index}_src`).remove();
+  });
+  /////////画像の削除ボタンをクリックした時ここまで/////////
+
 });
