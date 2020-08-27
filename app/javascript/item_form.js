@@ -53,7 +53,7 @@ document.addEventListener('turbolinks:load', function () {
       return false;
     }
     const blob_url = window.URL.createObjectURL(file); //選択された画像をblob url形式に変換する。
-    if ($(`.item-image[data-index="${index}"]`)) {  // プレビュー画像が表示されている→編集ボタンで画像を変更しようとしている
+    if ($(`.item-image[data-index="${index}"]`)[0]) {  // プレビュー画像が表示されている→編集ボタンで画像を変更しようとしている
       // プレビュー画像の差し替えのみを行い終了
       const preview_image = $(`.item-image[data-index="${index}"]`).children("img");  // 既に表示されているプレビュー画像を取得
       preview_image.attr("src", blob_url);  // プレビュー画像のsrc属性を書き換えることで画像が変わる
