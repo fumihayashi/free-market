@@ -1,7 +1,8 @@
 document.addEventListener('turbolinks:load', function () {
   if (!$('#item_form')[0]) return false; //商品出品・編集ページではないなら以降実行しない。
   
-  function buildImagePreview(blob_url, index) { //選択した画像ファイルのプレビューを表示する。
+  function buildImagePreview(blob_url, index) {
+    //選択した画像ファイルのプレビューを表示する。
     html = `
             <div class="item-image new" data-index=${index}>
               <img src =${blob_url} class="item-image__image">
@@ -17,10 +18,12 @@ document.addEventListener('turbolinks:load', function () {
             `;
     return html;
   }
-
-  function newFileField(index) { //新規画像投稿用のfile_fieldを作成しappendする。
+  /////////buildImagePreview()ここまで/////////
+  
+  function newFileField(index) {
+    //新規画像投稿用のfile_fieldを作成しappendする。
     const html = `
-               <input accept="image/*" class="new-item-image" style="display: block;" data-index="${index}" type="file" name="item[images_attributes][${index}][src]" id="item_images_attributes_${index}_src">
+               <input accept="image/*" class="new-item-image" data-index="${index}" type="file" name="item[images_attributes][${index}][src]" id="item_images_attributes_${index}_src">
                `;
     return html;
   }
@@ -43,24 +46,25 @@ document.addEventListener('turbolinks:load', function () {
     //新しく画像が選択された、もしくは変更しようとしたが何も選択しなかった時
     const file = e.target.files[0];
     let index = $(this).data("index");
-    if (!file) {
-      console.log("何も選択しませんでした");
+    if (!file) {  // fileが空→編集ボタンをクリックしたが何も選択しなかった
+      // 削除ボタンを起動させて終了
       const delete_button = $(`.item-image[data-index="${index}"]`).find(".item-image__buttons--delete");
       delete_button.trigger("click");
       return false;
     }
     const blob_url = window.URL.createObjectURL(file); //選択された画像をblob url形式に変換する。
-    if ($(`.item-image[data-index="${index}"]`)[0]) {
-      console.log("画像の変更を行います");
-      const preview_image = $(`.item-image[data-index="${index}"]`).children("img");
-      preview_image.attr("src", blob_url);
+    if ($(`.item-image[data-index="${index}"]`)) {  // プレビュー画像が表示されている→編集ボタンで画像を変更しようとしている
+      // プレビュー画像の差し替えのみを行い終了
+      const preview_image = $(`.item-image[data-index="${index}"]`).children("img");  // 既に表示されているプレビュー画像を取得
+      preview_image.attr("src", blob_url);  // プレビュー画像のsrc属性を書き換えることで画像が変わる
       return false;
     }
-    const preview_html = buildImagePreview(blob_url, index);
-    $("#select-image-button").before(preview_html);
+    // 以下は画像の新規追加処理
+    const preview_html = buildImagePreview(blob_url, index);  // プレビュー画像を組み立てる
+    $("#select-image-button").before(preview_html); // プレビュー画像をビューに表示する
     index += 1;
-    const file_field_html = newFileField(index);
-    $("#image-file-fields").append(file_field_html);
+    const file_field_html = newFileField(index);  // 次の画像のためのfile_fieldを組み立てる
+    $("#image-file-fields").append(file_field_html);  // file_fieldを追加す
   });
   /////////file_fieldが変化した時ここまで/////////
 
@@ -68,10 +72,10 @@ document.addEventListener('turbolinks:load', function () {
   /////////画像の削除ボタンをクリックした時/////////
   ////////////////////////////////////////////
   $("#selected-item-images").on("click", ".item-image__buttons--delete", function (e) {
-    const index = $(this).parents(".item-image").data("index");
-    $(this).parents(".item-image").remove();
-    $(`#item_images_attributes_${index}__destroy`).prop("checked", true);
-    $(`#item_images_attributes_${index}_src`).remove();
+    const index = $(this).parents(".item-image").data("index"); // 何番目の画像を削除しようとしているかを取得する
+    $(this).parents(".item-image").remove();  // プレビュー画像とボタンをまとめている親要素を削除する
+    $(`#item_images_attributes_${index}__destroy`).prop("checked", true); // 削除のON/OFFを表すチェックボックスにチェックを入れる
+    $(`#item_images_attributes_${index}_src`).remove(); // file_fieldを削除する
   });
   /////////画像の削除ボタンをクリックした時ここまで/////////
 
@@ -79,9 +83,8 @@ document.addEventListener('turbolinks:load', function () {
   /////////画像の編集ボタンをクリックした時/////////
   ////////////////////////////////////////////
   $("#selected-item-images").on("click", ".item-image__buttons--edit", function (e) {
-    const index = $(this).parents(".item-image").data("index");
-    $(`#item_images_attributes_${index}_src`).trigger("click");
+    const index = $(this).parents(".item-image").data("index"); // 何番目の画像を編集しようとしているかを取得する
+    $(`#item_images_attributes_${index}_src`).trigger("click"); // 画像に対応する編集ボタンを起動する
   });
   /////////画像の編集ボタンをクリックした時ここまで/////////
-
 });
