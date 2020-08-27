@@ -33,6 +33,7 @@ document.addEventListener('turbolinks:load', function () {
       console.table(categories);
       const html = buildCategoryForm(categories);
       console.log(html);
+      $(".select-category:last").after(html);
     })
     .fail(function () {
       alert('error');
