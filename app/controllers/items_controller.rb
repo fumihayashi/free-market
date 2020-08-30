@@ -68,6 +68,9 @@ class ItemsController < ApplicationController
     render layout: 'no_menu' # レイアウトファイル指定
   end
 
+  def purchase
+  end
+
   private
   def item_params
     params.require(:item).permit(
