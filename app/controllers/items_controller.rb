@@ -2,6 +2,7 @@ class ItemsController < ApplicationController
   skip_before_action :authenticate_user!, only: [:index, :show]
   before_action :set_item, only: [:show, :edit, :update, :destroy, :purchase_confirmation, :purchase]
   before_action :user_is_not_seller, only: [:edit, :update, :destroy]
+  before_action :sold_item, only: [:purchase_confirmation, :purchase]
   before_action :user_is_seller, only: [:purchase_confirmation, :purchase]
 
 
@@ -83,6 +84,10 @@ class ItemsController < ApplicationController
     @item.update(deal: "売り切れ")
 
     redirect_to item_path(@item), notice: "商品を購入しました"
+  end
+
+  def sold_item
+    redirect_to root_path, alert: "売り切れです" if @item.deal != "販売中"
   end
 
   private
