@@ -2,6 +2,8 @@ class ItemsController < ApplicationController
   skip_before_action :authenticate_user!, only: [:index, :show]
   before_action :set_item, only: [:show, :edit, :update, :destroy, :purchase_confirmation, :purchase]
   before_action :user_is_not_seller, only: [:edit, :update, :destroy]
+  before_action :user_is_seller, only: [:purchase_confirmation, :purchase]
+
 
   def index
     ladies_category = Category.find_by(name: "レディース")
@@ -77,7 +79,7 @@ class ItemsController < ApplicationController
       currency: 'jpy'  # 通貨の種類
     )
     @item.update(deal: "売り切れ")
-    
+
     redirect_to item_path(@item), notice: "商品を購入しました"
   end
 
@@ -103,6 +105,10 @@ class ItemsController < ApplicationController
 
   def user_is_not_seller
     redirect_to root_path, alert: "あなたは出品者ではありません" unless @item.seller_id == current_user.id
+  end
+
+  def user_is_seller
+    redirect_to root_path, alert: "自分で出品した商品は購入できません" if @item.seller_id == current_user.id
   end
 
 end
