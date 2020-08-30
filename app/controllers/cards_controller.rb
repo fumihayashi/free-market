@@ -1,6 +1,10 @@
 class CardsController < ApplicationController
   before_action :redirect_registered_user, except: [:index]
 
+  def index
+    @card = Card.get_card(current_user.card.customer_token) if current_user.card
+  end
+  
   def new
     @card = Card.new
     ## @exp_yearなどの定義がある場合はそのままにしておくこと
