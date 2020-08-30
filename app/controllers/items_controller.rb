@@ -2,7 +2,7 @@ class ItemsController < ApplicationController
   skip_before_action :authenticate_user!, only: [:index, :show]
   before_action :set_item, only: [:show, :edit, :update, :destroy, :purchase_confirmation, :purchase]
   before_action :user_is_not_seller, only: [:edit, :update, :destroy]
-  before_action :sold_item, only: [:purchase_confirmation, :purchase]
+  before_action :sold_item, only: [:edit, :update, :destroy, :purchase_confirmation, :purchase]
   before_action :user_is_seller, only: [:purchase_confirmation, :purchase]
 
 
