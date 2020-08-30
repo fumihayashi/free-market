@@ -63,6 +63,11 @@ class ItemsController < ApplicationController
   def show
   end
 
+  def purchase_confirmation
+    @card = Card.get_card(current_user.card.customer_token) if current_user.card
+    render layout: 'no_menu' # レイアウトファイル指定
+  end
+
   private
   def item_params
     params.require(:item).permit(
