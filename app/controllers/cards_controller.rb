@@ -1,5 +1,11 @@
 class CardsController < ApplicationController
+  before_action :redirect_registered_user, except: [:index]
 
+  def new
+    @card = Card.new
+    ## @exp_yearなどの定義がある場合はそのままにしておくこと
+  end
+  
   def create
     Payjp.api_key = Rails.application.credentials.payjp[:secret_key]
 
@@ -13,8 +19,9 @@ class CardsController < ApplicationController
     end
   end
 
-  def new
-    @card = Card.new
-    ## @exp_yearなどの定義がある場合はそのままにしておくこと
+  private
+
+  def redirect_registered_user
+    redirect_to cards_path, alert: "既にカードを登録済みです。" if current_user.card
   end
 end
