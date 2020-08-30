@@ -12,16 +12,24 @@ document.addEventListener('turbolinks:load', function () {
         exp_month: $("#exp_month_form").val(),
         exp_year: Number($("#exp_year_form").val()) + 2000
       };
-      console.log(card);
 
       Payjp.createToken(card, (status, response) => { //cardをpayjpに送信して登録する。
       
         if (status === 200) { //成功した場合
           alert("カードを登録しました");
-          console.log(response.id);
+          // ↓hidden_fieldにcardのtokenを入れることでtokenがparamsに送られる。
+          $("#card_token").append(
+            `<input type="hidden" name="payjp_token" value=${response.id}>
+            <input type="hidden" name="card_token" value=${response.card.id}>`
+          );
+          $("#card_number_form").removeAttr("name");
+          $("#cvc_form").removeAttr("name");
+          $("#exp_month_form").removeAttr("name");
+          $("#exp_year_form").removeAttr("name");
+          // ↓formのsubmitボタンを強制起動する（ページが遷移してコントローラが起動する）。
+          $('#card_form')[0].submit();
         } else { //失敗した場合
           alert("カード情報が正しくありません。");
-          console.log(response.error.message);
           regist_button.prop('disabled', false);
         }
 
