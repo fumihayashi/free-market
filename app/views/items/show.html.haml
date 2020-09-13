@@ -60,7 +60,7 @@
         （税込）
       .item-show__price--right
         送料込み
-    - if user_signed_in? && @item.seller_id = current_user.id
+    - if user_signed_in? && @item.seller_id != current_user.id
       = link_to purchase_confirmation_item_path(@item) do
         .button.back-red
           購入画面に進む
